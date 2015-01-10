@@ -3,6 +3,8 @@ package redsocial;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 public class Usuario {
@@ -12,6 +14,8 @@ public class Usuario {
 	private String correo;
 	private String contrasenya;
 	private String direccion;
+	
+	private DBCollection collection;
 	
 	public Usuario() {
 		
@@ -26,7 +30,7 @@ public class Usuario {
         doc.put("contrasenya", contrasenya);
         doc.put("direccion", direccion);
         
-        DBCollection collection = db.getCollection("usuario");				
+        this.collection = db.getCollection("usuario");				
 		collection.save(doc);
 		
 		this.usuario=nombre;
@@ -37,10 +41,77 @@ public class Usuario {
 		
 	}
 	
-	public void logear(String correo, String contrasenya){
+	public boolean logear(String correo, String contrasenya, DB db){
 		
+		/* Con la clase BasicDBObject tambien creamos objetos con los que hacer consultas */
+		BasicDBObject query = new BasicDBObject("contrasenya", contrasenya).append("correo", correo);
+		this.collection = db.getCollection("usuario");	
+		
+		DBCursor cursor = collection.find(query);
+		for (DBObject usuario: cursor) {
+			
+			this.usuario= usuario.get("nombre").toString();
+			this.apellido= usuario.get("apellido").toString();
+			this.correo= usuario.get("correo").toString();
+			this.contrasenya = usuario.get("contrasenya").toString();
+			this.direccion = usuario.get("direccion").toString();
+			
+			return true;
+		}
+		
+		return false;
 		
 		
 	}
+
+	public String getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	public String getApellido() {
+		return apellido;
+	}
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	public String getCorreo() {
+		return correo;
+	}
+
+	public void setCorreo(String correo) {
+		this.correo = correo;
+	}
+
+	public String getContrasenya() {
+		return contrasenya;
+	}
+
+	public void setContrasenya(String contrasenya) {
+		this.contrasenya = contrasenya;
+	}
+
+	public String getDireccion() {
+		return direccion;
+	}
+
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
+
+	public DBCollection getCollection() {
+		return collection;
+	}
+
+	public void setCollection(DBCollection collection) {
+		this.collection = collection;
+	}
+	
+	
 	
 }
