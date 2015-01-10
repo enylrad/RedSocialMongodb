@@ -10,9 +10,10 @@ import com.mongodb.MongoException;
 public class Red {
 
 	private static Mongo mongoClient;
+	private static DB db;
+	
 	private static String dir = "192.168.1.6";
 	private static int socket = 27017;
-	private static DB db;
 	
 	private static Scanner registro = new Scanner(System.in);
 	
@@ -21,7 +22,13 @@ public class Red {
 		 mongoClient = new Mongo( dir , socket );
 		 db = mongoClient.getDB( "redsocial" );
 		 
-		 int opcion = -1;
+		 menuPrincipal(db);
+		 
+	}
+	
+	public static void menuPrincipal(DB db){
+		
+		int opcion = -1;
 		 
 		 do{
 			 
@@ -68,7 +75,7 @@ public class Red {
 			 }
 			 
 		 }while(opcion != 0);
-		 
+		
 	}
 	
 	
@@ -102,8 +109,7 @@ public class Red {
 		
 		Usuario u = new Usuario();
 		u.crearUsuario(nombre, apellido, correo, contrasenya, direccion, db);
-		System.out.println("Entrando en la Red Social...");
-		menuRedSocial(u);
+		System.out.println("Ya puedes logerate en la Red Social...");
 		
 	}
 	
@@ -137,10 +143,8 @@ public class Red {
 			 
 			 System.out.println("Bienvenido " + u.getUsuario());
 			 System.out.println("¿Que desea hacer?,");
-			 System.out.println("\t1 - Unirse a grupo");
-			 System.out.println("\t2 - Salir grupo");
-			 System.out.println("\t3 - Comentar grupo");
-			 System.out.println("\t4 - Darse de baja");
+			 System.out.println("\t1 - Gestión Grupo");
+			 System.out.println("\t2 - Darse de baja");
 			 System.out.println("\t0 - Cerrar Sesión");
 			 System.out.print("Introduzca una opción: ");
 			 
@@ -150,18 +154,21 @@ public class Red {
 				 
 				 switch (opcion) {
 					case 1:
-						
-						Logear();					
+				
+						menuGrupo(u);
+									
 						break;
 						
 					case 2:
 						
-						nuevoUsuario();
+						darseBaja(u);
 						
 						break;
 						
 					case 0:
-						System.out.println("Ha salido del programa.");
+						
+						System.out.println("Sesión cerrada correctamente");
+						
 						break;
 	
 					default:
@@ -184,5 +191,122 @@ public class Red {
 		
 	}
 	
+	public static void menuGrupo(Usuario u){
+		
+		int opcion = -1;
+		 
+		 do{
+			 
+			 System.out.println("Bienvenido " + u.getUsuario());
+			 System.out.println("¿Que desea hacer?,");
+			 System.out.println("\t1 - Crear Grupo");
+			 System.out.println("\t2 - Borrar Grupo");
+			 System.out.println("\t3 - Comentar en Grupo");
+			 System.out.println("\t4 - Visualizar Comentarios");
+			 System.out.println("\t5 - Listar usuarios de localidad de un grupo");
+			 System.out.println("\t6 - Salir Grupo");
+			 System.out.println("\t0 - Volver");
+			 System.out.print("Introduzca una opción: ");
+			 
+			 try{
+				 
+				 opcion = Integer.parseInt(registro.nextLine());
+				 
+				 switch (opcion) {
+				 case 1:
+						
+						crearGrupo(u);
+									
+						break;
+						
+					case 2:
+						
+						borrarGrupo(u);
+						
+						break;
+					
+					case 3:
+							
+						comentarGrupo(u);
+										
+						break;
+							
+					case 4:
+							
+						listarComentarios();
+							
+						break;
+						
+					case 5:
+								
+						listarGrupo();
+											
+						break;
+								
+					case 6:
+								
+						salirGrupo(u);
+								
+						break;
+						
+					case 0:
+						System.out.println("Volviendo al menu principal");
+						break;
+	
+					default:
+						
+						System.out.println("Opción no valida, introduzcala de nuevo.");
+						opcion = -1;
+		
+						break;
+					}
+				 
+			 }catch(NumberFormatException e){
+				 
+				 System.out.println("La opción debe ser un número.");
+				 opcion = -1;
+				 
+			 }
+			 
+		 }while(opcion != 0);
+		
+	}
+	
+	public static void crearGrupo(Usuario u){
+		
+	}
+	
+	public static void borrarGrupo(Usuario u){
+		
+		
+	}
+	
+	public static void unirseGrupo(Usuario u){
+		
+	}
+	
+	public static void salirGrupo(Usuario u){
+		
+		
+	}
+	
+	public static void comentarGrupo(Usuario u){
+		
+		
+	}
+	
+	public static void listarGrupo(){
+		
+		
+	}
+	
+	public static void listarComentarios(){
+		
+	}
+	
+	public static void darseBaja(Usuario u){
+		
+		
+	}
 	
 }

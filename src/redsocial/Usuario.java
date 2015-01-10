@@ -1,22 +1,25 @@
 package redsocial;
 
+import java.util.ArrayList;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 
 public class Usuario {
 	
+	private long id;
 	private String usuario;
 	private String apellido;
 	private String correo;
 	private String contrasenya;
 	private String direccion;
+	private ArrayList<Grupo> grupos;
 	
 	private DBCollection collection;
-	
+
 	public Usuario() {
 		
 	}
@@ -32,12 +35,7 @@ public class Usuario {
         
         this.collection = db.getCollection("usuario");				
 		collection.save(doc);
-		
-		this.usuario=nombre;
-		this.apellido=apellido;
-		this.correo= correo;
-		this.contrasenya = contrasenya;
-		this.direccion = direccion;
+
 		
 	}
 	
@@ -50,6 +48,7 @@ public class Usuario {
 		DBCursor cursor = collection.find(query);
 		for (DBObject usuario: cursor) {
 			
+			this.id = (Long) usuario.get("_id");
 			this.usuario= usuario.get("nombre").toString();
 			this.apellido= usuario.get("apellido").toString();
 			this.correo= usuario.get("correo").toString();
@@ -110,6 +109,14 @@ public class Usuario {
 
 	public void setCollection(DBCollection collection) {
 		this.collection = collection;
+	}
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 	
 	
