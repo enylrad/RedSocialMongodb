@@ -16,7 +16,7 @@ public class Usuario {
 	private String correo;
 	private String contrasenya;
 	private String direccion;
-	private ArrayList<Grupo> grupos;
+	private ArrayList<Comentario> grupos;
 	
 	private DBCollection collection;
 
@@ -60,6 +60,18 @@ public class Usuario {
 		
 		return false;
 		
+		
+	}
+	
+	public void anyadirComentario(){
+		
+	}
+	
+	public void unirseGrupo(){
+		
+	}
+	
+	public void borrarGrupo(){
 		
 	}
 
