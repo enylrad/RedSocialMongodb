@@ -1,6 +1,6 @@
 package redsocial;
 
-import java.util.ArrayList;
+import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -10,13 +10,12 @@ import com.mongodb.DBObject;
 
 public class Usuario {
 	
-	private long id;
+	private ObjectId id;
 	private String usuario;
 	private String apellido;
 	private String correo;
 	private String contrasenya;
-	private String direccion;
-	private ArrayList<Comentario> grupos;
+	private String[] direccion = new String[4];
 	
 	private DBCollection collection;
 
@@ -24,19 +23,21 @@ public class Usuario {
 		
 	}
 	
-	public void crearUsuario(String nombre, String apellido, String correo, String contrasenya, String direccion, DB db){
+	public void crearUsuario(String nombre, String apellido, String correo, String contrasenya, String[] direccion, DB db){
 	
 		BasicDBObject doc = new BasicDBObject();
         doc.put("nombre", nombre);
         doc.put("apellido", apellido);
         doc.put("correo", correo);
         doc.put("contrasenya", contrasenya);
-        doc.put("direccion", direccion);
+        doc.put("direccion", new BasicDBObject("calle", direccion[0])
+        						.append("numero", direccion[1])
+        						.append("localidad", direccion[2])
+        						.append("codigo postal", direccion[3]));
         
         this.collection = db.getCollection("usuario");				
 		collection.save(doc);
-
-		
+	
 	}
 	
 	public boolean logear(String correo, String contrasenya, DB db){
@@ -48,19 +49,23 @@ public class Usuario {
 		DBCursor cursor = collection.find(query);
 		for (DBObject usuario: cursor) {
 			
-			this.id = (Long) usuario.get("_id");
+			this.id = (ObjectId) usuario.get("_id");
 			this.usuario= usuario.get("nombre").toString();
 			this.apellido= usuario.get("apellido").toString();
 			this.correo= usuario.get("correo").toString();
 			this.contrasenya = usuario.get("contrasenya").toString();
-			this.direccion = usuario.get("direccion").toString();
+			DBObject direccion = (DBObject) usuario.get("direccion");
 			
+			this.direccion[0] = (String) direccion.get("calle");
+			this.direccion[1] = (String) direccion.get("numero");
+			this.direccion[2] = (String) direccion.get("localidad");
+			this.direccion[3] = (String) direccion.get("codigo postal");
+	
 			return true;
 		}
 		
 		return false;
-		
-		
+			
 	}
 	
 	public void anyadirComentario(){
@@ -72,6 +77,19 @@ public class Usuario {
 	}
 	
 	public void borrarGrupo(){
+		
+	}
+	
+	public void darBaja(DB db){
+		
+		/* Con la clase BasicDBObject tambien creamos objetos con los que hacer consultas */
+		
+		System.out.println(this.id);
+		BasicDBObject query = new BasicDBObject("_id", this.id);
+		System.out.println(query);
+		this.collection = db.getCollection("usuario");	
+		
+		this.collection.remove(query);
 		
 	}
 
@@ -107,14 +125,6 @@ public class Usuario {
 		this.contrasenya = contrasenya;
 	}
 
-	public String getDireccion() {
-		return direccion;
-	}
-
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
-	}
-
 	public DBCollection getCollection() {
 		return collection;
 	}
@@ -122,13 +132,23 @@ public class Usuario {
 	public void setCollection(DBCollection collection) {
 		this.collection = collection;
 	}
-	
-	public long getId() {
+
+
+
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	public String[] getDireccion() {
+		return direccion;
+	}
+
+	public void setDireccion(String[] direccion) {
+		this.direccion = direccion;
 	}
 	
 	
