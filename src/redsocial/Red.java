@@ -12,7 +12,7 @@ public class Red {
 	private static Mongo mongoClient;
 	private static DB db;
 	
-	private static String dir = "192.168.1.6";
+	private static String dir = "127.0.0.1";
 	private static int socket = 27017;
 	
 	private static Scanner registro = new Scanner(System.in);
@@ -26,14 +26,13 @@ public class Red {
 		 
 	}
 	
-	public static void menuPrincipal(DB db){
+	public static void menuPrincipal(DB db) throws InterruptedException{
 		
 		int opcion = -1;
 		 
 		 do{
 			 
 			 System.out.println("Bienvenido a la Red Social MongoMola,");
-			 System.out.println("¿Quiere iniciar sesión o es un nuevo usuario?,");
 			 System.out.println("\t1 - Iniciar sesión");
 			 System.out.println("\t2 - Crear cuenta");
 			 System.out.println("\t0 - Salir");
@@ -45,17 +44,22 @@ public class Red {
 				 
 				 switch (opcion) {
 					case 1:
-						
+						System.out.println("Accediendo al login...");
+						Thread.sleep(1000);
 						Logear();					
 						break;
 						
 					case 2:
-						
+						System.out.println("Accediendo a la creación de cuenta...");
+						Thread.sleep(1000);
+						Logear();				
 						nuevoUsuario();
 						
 						break;
 						
 					case 0:
+						System.out.println("Salidendo del pragra...");
+						Thread.sleep(1000);
 						System.out.println("Ha salido del programa.");
 						break;
 	
