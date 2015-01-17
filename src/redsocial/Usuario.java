@@ -1,5 +1,8 @@
 package redsocial;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -7,6 +10,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Usuario {
 	
@@ -16,7 +20,6 @@ public class Usuario {
 	private String correo;
 	private String contrasenya;
 	private String[] direccion = new String[4];
-	
 	private DBCollection collection;
 
 	public Usuario() {
@@ -24,7 +27,8 @@ public class Usuario {
 	}
 	
 	public void crearUsuario(String nombre, String apellido, String correo, String contrasenya, String[] direccion, DB db){
-	
+
+		
 		BasicDBObject doc = new BasicDBObject();
         doc.put("nombre", nombre);
         doc.put("apellido", apellido);
@@ -68,7 +72,18 @@ public class Usuario {
 			
 	}
 	
-	public void anyadirComentario(){
+	public void anyadirComentario(Grupo grupo, String comentario, DB db){
+		
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject("comentario", new BasicDBObject("texto", comentario)
+								.append("grupo", grupo.getId())));
+		
+		collection.update(busqueda, updateQuery);
+		
+		grupo.incrementarComentario(db);
+		
+		
 		
 	}
 	

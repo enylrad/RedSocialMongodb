@@ -17,7 +17,6 @@ public class Grupo {
 	
 	private ObjectId id;
 	private String nombre;
-	private ArrayList<Usuario> usuarios = new ArrayList<>();
 	private int total_usuarios;
 	private int total_comentarios;
 	
@@ -43,12 +42,11 @@ public class Grupo {
 		
 		BasicDBObject doc = new BasicDBObject();
         doc.put("nombre", nombre);
-        doc.put("usuarios", Arrays.asList(new BasicDBObject("usuario", u.getId())
+        doc.put("usuarios", new BasicDBObject(new BasicDBObject("usuario", u.getId())
         					.append("fecha_ingreso", now)
         					.append("admin", true)));
         doc.put("total_usuarios", 1);
         doc.put("total_comentarios", 0);
-
         
         this.collection = db.getCollection("grupo");				
 		collection.save(doc);
@@ -64,7 +62,7 @@ public class Grupo {
 		
 	}
 	
-	public static ArrayList<Grupo> mostrarGrupos(Usuario u, DB db){
+	public static ArrayList<Grupo> mostrarGruposAdmin(Usuario u, DB db){
 		
 		ArrayList<Grupo> grupos = new ArrayList<>();
 		
@@ -90,6 +88,45 @@ public class Grupo {
 		return grupos;
 		
 	}
+	
+	public static ArrayList<Grupo> mostrarGrupos(Usuario u, DB db){
+	
+		ArrayList<Grupo> grupos = new ArrayList<>();
+		
+		/* Con la clase BasicDBObject tambien creamos objetos con los que hacer consultas */
+		BasicDBObject query = new BasicDBObject();
+		query.put("usuarios.usuario", u.getId());
+		
+		DBCollection col = db.getCollection("grupo");	
+		
+		DBCursor cursor = col.find(query);
+		for (DBObject grupo: cursor) {
+			
+			ObjectId id = (ObjectId) grupo.get("_id");
+			String nombre= (String) grupo.get("nombre");
+			int total_usuarios = (int) grupo.get("total_usuarios");
+			int total_comentarios = (int) grupo.get("total_comentarios");
+			
+			grupos.add(new Grupo(id, nombre, total_usuarios, total_comentarios));
+		
+		}
+		
+		return grupos;
+		
+	}
+	
+	public void incrementarComentario(DB db){
+		
+		this.total_comentarios++;
+		
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$set", new BasicDBObject("total_comentarios", this.total_comentarios));
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+		
+		
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -105,14 +142,6 @@ public class Grupo {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public ArrayList<Usuario> getUsuarios() {
-		return usuarios;
-	}
-
-	public void setUsuarios(ArrayList<Usuario> usuarios) {
-		this.usuarios = usuarios;
 	}
 
 	public int getTotal_usuarios() {

@@ -14,7 +14,7 @@ public class Red {
 	private static Mongo mongoClient; 	//Conexión
 	private static DB db;				//Base de datos
 	
-	private static String dir = "127.0.0.1";
+	private static String dir = "192.168.1.6";
 	private static int socket = 27017;
 	
 	private static Scanner registro = new Scanner(System.in);
@@ -23,7 +23,7 @@ public class Red {
 	public static void main(String[] args) throws UnknownHostException, MongoException, InterruptedException {
 		
 		 mongoClient = new Mongo( dir , socket );
-		 db = mongoClient.getDB( "redsocial" );
+		 db = mongoClient.getDB( "redsocial_david" );
 		 
 		 menuPrincipal(db);
 		 
@@ -169,10 +169,11 @@ public class Red {
 			 System.out.println("¿Que desea hacer?,");
 			 System.out.println("\t1 - Crear Grupo");
 			 System.out.println("\t2 - Borrar Grupo");
-			 System.out.println("\t3 - Comentar en Grupo");
-			 System.out.println("\t4 - Visualizar Comentarios");
-			 System.out.println("\t5 - Listar usuarios de localidad de un grupo");
-			 System.out.println("\t6 - Salir Grupo");
+			 System.out.println("\t3 - Unirse Grupo");
+			 System.out.println("\t4 - Comentar en Grupo");
+			 System.out.println("\t5 - Visualizar Comentarios");
+			 System.out.println("\t6 - Listar usuarios de localidad de un grupo");
+			 System.out.println("\t7 - Salir Grupo");
 			 System.out.println("\t0 - Volver");
 			 System.out.print("Introduzca una opción: ");
 			 
@@ -192,26 +193,32 @@ public class Red {
 						borrarGrupo(u);
 						
 						break;
-					
+						
 					case 3:
+						
+						unirseGrupo(u);
+						
+						break;
+					
+					case 4:
 							
 						comentarGrupo(u);
 										
 						break;
 							
-					case 4:
+					case 5:
 							
 						listarComentarios();
 							
 						break;
 						
-					case 5:
+					case 6:
 								
 						listarGrupo();
 											
 						break;
 								
-					case 6:
+					case 7:
 								
 						salirGrupo(u);
 								
@@ -310,6 +317,7 @@ public class Red {
 		}else{
 			
 			System.out.println("Error al logear");
+			
 		}
 	}
 	
@@ -338,7 +346,7 @@ public class Red {
 			
 		System.out.println("¿Que grupo desea borrar?,");
 		
-		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+		ArrayList<Grupo> grupos = Grupo.mostrarGruposAdmin(u, db);
 		
 		
 		int opcion = -1;
@@ -383,9 +391,7 @@ public class Red {
 			}
 			
 		}while(opcion == -1);
-		
-		
-		
+			
 	}
 	
 
@@ -413,7 +419,48 @@ public class Red {
 	 */
 	public static void comentarGrupo(Usuario u){
 		
+		System.out.println("¿En que grupo quieres comentar?: ");
 		
+		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+		
+		
+		int opcion = -1;
+			
+		do{	
+			
+			try{
+			
+				for(int i=0; i<grupos.size(); i++){
+					
+					System.out.println((i+1) + " - " + grupos.get(i).getNombre());
+					
+				}
+				
+				System.out.print("Elige una opción: ");
+				opcion = Integer.parseInt(registro.nextLine());
+				
+				if(opcion>grupos.size() || opcion < 1){
+					
+					System.out.println("La opción no es válida");
+					opcion = -1;
+					
+				}else{
+					
+					System.out.print("Comentario: ");
+					
+					String comentario = registro.nextLine();
+					
+					u.anyadirComentario(grupos.get(opcion-1), comentario, db);
+					
+				}
+				
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				System.out.println("La opción debe ser un número");
+				opcion = -1;
+			}
+			
+		}while(opcion == -1);
 	}
 	
 	/**
