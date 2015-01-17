@@ -1,6 +1,7 @@
 package redsocial;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.mongodb.DB;
@@ -334,9 +335,60 @@ public class Red {
 	 * @param u
 	 */
 	public static void borrarGrupo(Usuario u){
+			
+		System.out.println("¿Que grupo desea borrar?,");
+		
+		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+		
+		
+		int opcion = -1;
+			
+		do{	
+			
+			try{
+			
+				for(int i=0; i<grupos.size(); i++){
+					
+					System.out.println((i+1) + " - " + grupos.get(i).getNombre());
+					
+				}
+				
+				System.out.print("Elige una opción: ");
+				opcion = Integer.parseInt(registro.nextLine());
+				
+				if(opcion>grupos.size() || opcion < 1){
+					
+					System.out.println("La opción no es válida");
+					opcion = -1;
+					
+				}else{
+					
+					String nombre = grupos.get(opcion-1).getNombre();
+					
+					System.out.println("Se va a proceder a borar el grupo " + nombre + "...");
+					Thread.sleep(1000);
+					System.out.println("...");
+					grupos.get(opcion-1).borrarGrupo(db);
+					Thread.sleep(1000);
+					System.out.println("Se ha borrado el grupo " + nombre);
+				}
+				
+			}catch (NumberFormatException e) {
+				// TODO: handle exception
+				System.out.println("La opción debe ser un número");
+				opcion = -1;
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}while(opcion == -1);
+		
 		
 		
 	}
+	
+
 	
 	/**
 	 * Union de grupos

@@ -82,12 +82,10 @@ public class Usuario {
 	
 	public void darBaja(DB db){
 		
-		/* Con la clase BasicDBObject tambien creamos objetos con los que hacer consultas */
-		
-		System.out.println(this.id);
 		BasicDBObject query = new BasicDBObject("_id", this.id);
-		System.out.println(query);
+		
 		this.collection = db.getCollection("usuario");	
+		System.out.println(query);
 		
 		this.collection.remove(query);
 		
@@ -132,8 +130,6 @@ public class Usuario {
 	public void setCollection(DBCollection collection) {
 		this.collection = collection;
 	}
-
-
 
 	public ObjectId getId() {
 		return id;
