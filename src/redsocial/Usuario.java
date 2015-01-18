@@ -184,13 +184,6 @@ public class Usuario {
 	}
 
 	/**
-	 * Metodo para la union de un grupo 
-	 */
-	public void unirseGrupo() {
-
-	}
-
-	/**
 	 * Metodo para dar de Baja a un usuario
 	 * @param db
 	 */

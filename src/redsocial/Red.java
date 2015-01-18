@@ -407,27 +407,9 @@ public class Red {
 	 */
 	public static void unirseGrupo(Usuario u) {
 
-	}
+		System.out.println("¿Que grupo desea borrar?,");
 
-	/**
-	 * Salida de grupos
-	 * 
-	 * @param u
-	 */
-	public static void salirGrupo(Usuario u) {
-
-	}
-
-	/**
-	 * Comentar en un grupo
-	 * 
-	 * @param u
-	 */
-	public static void comentarGrupo(Usuario u) {
-
-		System.out.println("¿En que grupo quieres comentar?: ");
-
-		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+		ArrayList<Grupo> grupos = Grupo.mostrarGruposLibres(u, db);
 
 		int opcion = -1;
 
@@ -452,21 +434,87 @@ public class Red {
 
 				} else {
 
-					System.out.print("Comentario: ");
-
-					String comentario = registro.nextLine();
-
-					u.anyadirComentario(grupos.get(opcion - 1), comentario, db);
-
+					grupos.get(opcion - 1).unirseGrupo(u, db);
+	
 				}
 
 			} catch (NumberFormatException e) {
 				// TODO: handle exception
 				System.out.println("La opción debe ser un número");
 				opcion = -1;
-			}
+			} 
 
 		} while (opcion == -1);
+
+		
+	}
+
+	/**
+	 * Salida de grupos
+	 * 
+	 * @param u
+	 */
+	public static void salirGrupo(Usuario u) {
+
+	}
+
+	/**
+	 * Comentar en un grupo
+	 * 
+	 * @param u
+	 */
+	public static void comentarGrupo(Usuario u) {
+
+		System.out.println("¿En que grupo quieres comentar?: ");
+
+		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+
+		if(grupos.size() != 0){
+		
+			int opcion = -1;
+	
+			do {
+	
+				try {
+	
+					for (int i = 0; i < grupos.size(); i++) {
+	
+						System.out.println((i + 1) + " - "
+								+ grupos.get(i).getNombre());
+	
+					}
+	
+					System.out.print("Elige una opción: ");
+					opcion = Integer.parseInt(registro.nextLine());
+	
+					if (opcion > grupos.size() || opcion < 1) {
+	
+						System.out.println("La opción no es válida");
+						opcion = -1;
+	
+					} else {
+	
+						System.out.print("Comentario: ");
+	
+						String comentario = registro.nextLine();
+	
+						u.anyadirComentario(grupos.get(opcion - 1), comentario, db);
+	
+					}
+	
+				} catch (NumberFormatException e) {
+					// TODO: handle exception
+					System.out.println("La opción debe ser un número");
+					opcion = -1;
+				}
+	
+			} while (opcion == -1);
+			
+		} else{
+			
+			System.out.println("No perteneces a ningun grupos, no puedes comentar.");
+		}
+		
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package redsocial;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
@@ -79,7 +80,7 @@ public class Grupo {
 		BasicDBObject doc = new BasicDBObject();
 		doc.put("nombre", nombre);
 		doc.put("usuarios",
-				new BasicDBObject(new BasicDBObject("usuario", u.getId())
+				Arrays.asList(new BasicDBObject("usuario", u.getId())
 						.append("fecha_ingreso", now).append("admin", true)));
 		doc.put("total_usuarios", 1);
 		doc.put("total_comentarios", 0);
@@ -123,14 +124,67 @@ public class Grupo {
 	 * Quitar usuario del grupo
 	 */
 	public void salirGrupo(Usuario u, DB db){
-
+		
+		//Borramos el Usuario del grupo
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 
 		DBObject updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("usuario", u.getId())));
-		System.out.println(updateQuery);
+		
 		this.collection = db.getCollection("grupo");
 		this.collection.update(busqueda, updateQuery);
 		
+		//Bajamos en un usuario el grupo
+		this.total_usuarios--;
+
+		updateQuery = new BasicDBObject("$set", new BasicDBObject(
+				"total_usuarios", this.total_usuarios));
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+		
+		//Miramos a ver si los usuarios del grupo es igual a 0
+		updateQuery = new BasicDBObject("usuarios", new BasicDBObject("$size", 0));
+		
+		DBCursor cursor = collection.find(updateQuery);
+		
+		boolean encontrado = false;
+		
+		for (DBObject usuario : cursor) {
+
+			encontrado = true;
+			
+		}
+		
+		//Si lo encontramos borramos, sino damos el admin al siguiente(falta comprobar)
+		if(encontrado){
+			
+			this.collection.remove(updateQuery);
+			System.out.println("Se a eliminado el grupo " + this.getNombre() + " ya que no queda ningun usuario");
+			
+		}else{
+			
+			updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("admin", true).append("$slice", 0)));
+			
+		}
+		
+	}
+	
+	/**
+	 * Metodo para la union de un grupo 
+	 */
+	public void unirseGrupo(Usuario u, DB db) {
+		
+		Date now = new Date();
+		
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject("usuario", u.getId())
+		.append("fecha_ingreso", now).append("admin", true));
+		this.collection = db.getCollection("grupo");
+
+		this.collection.update(busqueda, updateQuery);
+
+		
+
 	}
 
 	// /////////////////////////////////////////////METODOS STATIC///////////////////////////////////////////////////
@@ -182,6 +236,36 @@ public class Grupo {
 
 		DBCollection col = db.getCollection("grupo");
 
+		DBCursor cursor = col.find(query);
+		for (DBObject grupo : cursor) {
+
+			ObjectId id = (ObjectId) grupo.get("_id");
+			String nombre = (String) grupo.get("nombre");
+			int total_usuarios = (int) grupo.get("total_usuarios");
+			int total_comentarios = (int) grupo.get("total_comentarios");
+
+			grupos.add(new Grupo(id, nombre, total_usuarios, total_comentarios));
+
+		}
+
+		return grupos;
+
+	}
+	
+	/**
+	 * Metodo que busca todos los usuarios donde no esta inscrito el usuario
+	 * @param u
+	 * @param db
+	 * @return
+	 */
+	public static ArrayList<Grupo> mostrarGruposLibres(Usuario u, DB db) {
+		//Faltan desarrollar grupos libres.
+
+		ArrayList<Grupo> grupos = new ArrayList<>();
+
+		BasicDBObject query = new BasicDBObject(new BasicDBObject("usuarios", new BasicDBObject("$nin", new BasicDBObject("usuario", u.getId()))));
+
+		DBCollection col = db.getCollection("grupo");
 		DBCursor cursor = col.find(query);
 		for (DBObject grupo : cursor) {
 
