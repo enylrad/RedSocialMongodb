@@ -13,7 +13,7 @@ public class Red {
 	private static Mongo mongoClient; // Conexión
 	private static DB db; // Base de datos
 
-	private static String dir = "192.168.1.6";
+	private static String dir = "127.0.0.1";
 	private static int socket = 27017;
 
 	private static Scanner registro = new Scanner(System.in);
@@ -22,7 +22,7 @@ public class Red {
 			MongoException, InterruptedException {
 
 		mongoClient = new Mongo(dir, socket);
-		db = mongoClient.getDB("redsocial_david");
+		db = mongoClient.getDB("redsocial");
 
 		menuPrincipal(db);
 
@@ -494,16 +494,46 @@ public class Red {
 
 		while (true) {
 
+			ArrayList<Grupo> grupos = Grupo.mostrarGruposAdmin(u, db);
+			
+			if(grupos.size()>0){
+			
+				System.out.println("Es administrador de los siguientes grupos: ");
+				
+				for(int i=0; i<grupos.size(); i++){
+					
+					System.out.println(grupos.get(i).getNombre());
+				
+				}
+				
+				System.out.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
+				
+			}
+			
 			System.out
-					.println("Se va a procedr a darle de baja del servicio, ¿Esta seguro?: ");
+					.println("Se va a procederá a darle de baja del servicio, ¿Esta seguro?: ");
 			respuesta = registro.nextLine();
 
 			if (Character.toString(respuesta.charAt(0)).equalsIgnoreCase("S")) {
+				
 				u.darBaja(db);
+				
+				if(grupos.size()>0){
+					
+					for(int i=0; i<grupos.size(); i++){
+						
+						grupos.get(i).salirGrupo(u, db);
+					
+					}
+						
+				}
+				
 				System.out.println("Se ha dado de baja correctamente.");
 				return true;
+				
 			} else if (Character.toString(respuesta.charAt(0))
 					.equalsIgnoreCase("N")) {
+				
 				System.out
 						.println("Gracias por seguir con nosotros :), se le devolvera al menu");
 				return false;

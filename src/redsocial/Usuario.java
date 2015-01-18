@@ -1,5 +1,7 @@
 package redsocial;
 
+import java.util.ArrayList;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -197,8 +199,6 @@ public class Usuario {
 		BasicDBObject query = new BasicDBObject("_id", this.id);
 
 		this.collection = db.getCollection("usuario");
-		System.out.println(query);
-
 		this.collection.remove(query);
 
 	}

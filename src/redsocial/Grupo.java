@@ -2,6 +2,7 @@ package redsocial;
 
 import java.util.ArrayList;
 import java.util.Date;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -116,6 +117,20 @@ public class Grupo {
 		this.collection = db.getCollection("grupo");
 		this.collection.update(busqueda, updateQuery);
 
+	}
+	
+	/**
+	 * Quitar usuario del grupo
+	 */
+	public void salirGrupo(Usuario u, DB db){
+
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("usuario", u.getId())));
+		System.out.println(updateQuery);
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+		
 	}
 
 	// /////////////////////////////////////////////METODOS STATIC///////////////////////////////////////////////////
