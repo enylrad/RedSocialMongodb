@@ -162,7 +162,7 @@ public class Grupo {
 			
 		}else{
 			
-			updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("admin", true).append("$slice", 0)));
+			updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("admin", true).append("$slice", 1)));
 			
 		}
 		
@@ -177,8 +177,8 @@ public class Grupo {
 		
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 
-		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject("usuario", u.getId())
-		.append("fecha_ingreso", now).append("admin", true));
+		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject("usuarios", new BasicDBObject("usuario", u.getId())
+		.append("fecha_ingreso", now).append("admin", true)));
 		this.collection = db.getCollection("grupo");
 
 		this.collection.update(busqueda, updateQuery);
@@ -263,7 +263,7 @@ public class Grupo {
 
 		ArrayList<Grupo> grupos = new ArrayList<>();
 
-		BasicDBObject query = new BasicDBObject(new BasicDBObject("usuarios", new BasicDBObject("$nin", new BasicDBObject("usuario", u.getId()))));
+		BasicDBObject query = new BasicDBObject(new BasicDBObject("usuarios", new BasicDBObject("$not", new BasicDBObject("$elemMatch", new BasicDBObject("usuario", u.getId())))));
 
 		DBCollection col = db.getCollection("grupo");
 		DBCursor cursor = col.find(query);

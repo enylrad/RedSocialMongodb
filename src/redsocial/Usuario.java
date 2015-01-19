@@ -1,6 +1,8 @@
 package redsocial;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.bson.types.ObjectId;
 
@@ -172,10 +174,12 @@ public class Usuario {
 	public void anyadirComentario(Grupo grupo, String comentario, DB db) {
 
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+		
+		Date now = new Date();
 
 		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject(
 				"comentario", new BasicDBObject("texto", comentario).append(
-						"grupo", grupo.getId())));
+						"grupo", grupo.getId()).append("fecha", now)));
 
 		collection.update(busqueda, updateQuery);
 
@@ -194,6 +198,41 @@ public class Usuario {
 		this.collection = db.getCollection("usuario");
 		this.collection.remove(query);
 
+	}
+	
+	//FALTA DESARROLLAR
+	/**
+	 * Visualizará comentarios de los grupos a los que pertenece el usuario
+	 * @param db
+	 */
+	public void visualizarComentarios(DB db, Grupo g){
+		
+		ArrayList<Grupo> grupos = new ArrayList<>();
+		
+		System.out.println("Comentarios del grupo " +g.getNombre() + ":");
+		
+		SimpleDateFormat fecha = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat hora = new SimpleDateFormat("HH:mm:ss");
+		String comentario = "";
+		Date f;
+		String autor = "";
+
+		BasicDBObject query = new BasicDBObject(new BasicDBObject("comentario", new BasicDBObject("$elemMatch", new BasicDBObject("grupo", g.getId()))));
+
+		DBCollection col = db.getCollection("usuario");
+		DBCursor cursor = col.find(query);
+		for (DBObject usuario : cursor) {
+
+			comentario = (String) usuario.get("comenatario.texto");
+			f = (Date) usuario.get("comentario.fecha");
+			autor = (String) usuario.get("usuario");
+
+			System.out.println(comentario + " - " + fecha.format(f) + " - " + " - " + hora.format(f) + " - " + autor);
+
+		}
+
+		
+		
 	}
 
 }

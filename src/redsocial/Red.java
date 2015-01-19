@@ -210,13 +210,13 @@ public class Red {
 
 				case 5:
 
-					listarComentarios();
+					listarComentarios(u);
 
 					break;
 
 				case 6:
 
-					listarGrupo();
+					listarUsuariosGrupo();
 
 					break;
 
@@ -348,55 +348,62 @@ public class Red {
 	 * @param u
 	 */
 	public static void borrarGrupo(Usuario u) {
-
-		System.out.println("¿Que grupo desea borrar?,");
-
+		
 		ArrayList<Grupo> grupos = Grupo.mostrarGruposAdmin(u, db);
 
-		int opcion = -1;
-
-		do {
-
-			try {
-
-				for (int i = 0; i < grupos.size(); i++) {
-
-					System.out.println((i + 1) + " - "
-							+ grupos.get(i).getNombre());
-
-				}
-
-				System.out.print("Elige una opción: ");
-				opcion = Integer.parseInt(registro.nextLine());
-
-				if (opcion > grupos.size() || opcion < 1) {
-
-					System.out.println("La opción no es válida");
+		if(grupos.size() !=  0){
+		
+			System.out.println("¿Que grupo desea borrar?,");
+	
+			int opcion = -1;
+	
+			do {
+	
+				try {
+	
+					for (int i = 0; i < grupos.size(); i++) {
+	
+						System.out.println((i + 1) + " - "
+								+ grupos.get(i).getNombre());
+	
+					}
+	
+					System.out.print("Elige una opción: ");
+					opcion = Integer.parseInt(registro.nextLine());
+	
+					if (opcion > grupos.size() || opcion < 1) {
+	
+						System.out.println("La opción no es válida");
+						opcion = -1;
+	
+					} else {
+	
+						String nombre = grupos.get(opcion - 1).getNombre();
+	
+						System.out.println("Se va a proceder a borar el grupo "
+								+ nombre + "...");
+						Thread.sleep(1000);
+						System.out.println("...");
+						grupos.get(opcion - 1).borrarGrupo(db);
+						Thread.sleep(1000);
+						System.out.println("Se ha borrado el grupo " + nombre);
+					}
+	
+				} catch (NumberFormatException e) {
+					// TODO: handle exception
+					System.out.println("La opción debe ser un número");
 					opcion = -1;
-
-				} else {
-
-					String nombre = grupos.get(opcion - 1).getNombre();
-
-					System.out.println("Se va a proceder a borar el grupo "
-							+ nombre + "...");
-					Thread.sleep(1000);
-					System.out.println("...");
-					grupos.get(opcion - 1).borrarGrupo(db);
-					Thread.sleep(1000);
-					System.out.println("Se ha borrado el grupo " + nombre);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-
-			} catch (NumberFormatException e) {
-				// TODO: handle exception
-				System.out.println("La opción debe ser un número");
-				opcion = -1;
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} while (opcion == -1);
+	
+			} while (opcion == -1);
+			
+		}else{
+			
+			System.out.println("No es administrador de ningun grupo, por lo que no puede borrar ninguno.");
+		}
 
 	}
 
@@ -407,44 +414,51 @@ public class Red {
 	 */
 	public static void unirseGrupo(Usuario u) {
 
-		System.out.println("¿Que grupo desea borrar?,");
-
 		ArrayList<Grupo> grupos = Grupo.mostrarGruposLibres(u, db);
-
-		int opcion = -1;
-
-		do {
-
-			try {
-
-				for (int i = 0; i < grupos.size(); i++) {
-
-					System.out.println((i + 1) + " - "
-							+ grupos.get(i).getNombre());
-
-				}
-
-				System.out.print("Elige una opción: ");
-				opcion = Integer.parseInt(registro.nextLine());
-
-				if (opcion > grupos.size() || opcion < 1) {
-
-					System.out.println("La opción no es válida");
-					opcion = -1;
-
-				} else {
-
-					grupos.get(opcion - 1).unirseGrupo(u, db);
+		
+		if(grupos.size() != 0){
+		
+			System.out.println("¿Que grupo desea unirse?,");
 	
-				}
-
-			} catch (NumberFormatException e) {
-				// TODO: handle exception
-				System.out.println("La opción debe ser un número");
-				opcion = -1;
-			} 
-
-		} while (opcion == -1);
+			int opcion = -1;
+	
+			do {
+	
+				try {
+	
+					for (int i = 0; i < grupos.size(); i++) {
+	
+						System.out.println((i + 1) + " - "
+								+ grupos.get(i).getNombre());
+	
+					}
+	
+					System.out.print("Elige una opción: ");
+					opcion = Integer.parseInt(registro.nextLine());
+	
+					if (opcion > grupos.size() || opcion < 1) {
+	
+						System.out.println("La opción no es válida");
+						opcion = -1;
+	
+					} else {
+	
+						grupos.get(opcion - 1).unirseGrupo(u, db);
+		
+					}
+	
+				} catch (NumberFormatException e) {
+					// TODO: handle exception
+					System.out.println("La opción debe ser un número");
+					opcion = -1;
+				} 
+	
+			} while (opcion == -1);
+		
+		}else{
+			
+			System.out.println("Pertenece a todos los grupos existentes.");
+		}
 
 		
 	}
@@ -520,15 +534,61 @@ public class Red {
 	/**
 	 * Listar usuarios de un grupo
 	 */
-	public static void listarGrupo() {
+	public static void listarUsuariosGrupo() {
 
 	}
 
 	/**
 	 * Listar comentarios de un grupo
 	 */
-	public static void listarComentarios() {
+	public static void listarComentarios(Usuario u) {
 
+		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
+		
+		if(grupos.size() != 0){
+			
+			System.out.println("¿De que grupo desea ver los comentarios?,");
+	
+			int opcion = -1;
+	
+			do {
+	
+				try {
+	
+					for (int i = 0; i < grupos.size(); i++) {
+	
+						System.out.println((i + 1) + " - "
+								+ grupos.get(i).getNombre());
+	
+					}
+	
+					System.out.print("Elige una opción: ");
+					opcion = Integer.parseInt(registro.nextLine());
+	
+					if (opcion > grupos.size() || opcion < 1) {
+	
+						System.out.println("La opción no es válida");
+						opcion = -1;
+	
+					} else {
+	
+						u.visualizarComentarios(db, grupos.get(opcion-1));
+		
+					}
+	
+				} catch (NumberFormatException e) {
+					// TODO: handle exception
+					System.out.println("La opción debe ser un número");
+					opcion = -1;
+				} 
+	
+			} while (opcion == -1);
+		
+		}else{
+			
+			System.out.println("No pertenece a ningun grupo.");
+		}
+		
 	}
 
 	/**
