@@ -131,12 +131,9 @@ public class Grupo {
 	 * @param num
 	 */
 	public void disminuirComentarios(DB db, int num){
-		
-		for(int i=0; i<num; i++){
+
+		this.total_comentarios = num;
 			
-			this.total_comentarios--;
-			
-		}
 
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 
@@ -202,20 +199,23 @@ public class Grupo {
 		this.disminuirUsuarios(db);
 
 		////////////////////////////////// Borramos los comentarios del usuario ////////////////////////////////////
-		busqueda = new BasicDBObject("_id", this.id);
 		updateQuery = new BasicDBObject("$pull", new BasicDBObject(
 				"comentario", new BasicDBObject("usuario", u.getId())));
-
-		this.collection = db.getCollection("grupo");
+		
 		this.collection.update(busqueda, updateQuery);
 
 		/////////////////////////////////////Disminuir varios comentarios ////////////////////////////////////////////
-		DBCursor cursor = collection.find(updateQuery);
+		DBCursor cursor = this.collection.find(busqueda);
 		for (DBObject grupo : cursor) {
 			
-			ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
+		
+				ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
 			
-			disminuirComentarios(db, comentarios.size());			
+			if(comentarios !=null){
+				disminuirComentarios(db, comentarios.size());
+			}else{
+				disminuirComentarios(db, 0);
+			}
 
 		}
 
@@ -223,7 +223,7 @@ public class Grupo {
 
 		updateQuery = new BasicDBObject("$set", new BasicDBObject(
 				"total_usuarios", this.total_usuarios));
-		this.collection = db.getCollection("grupo");
+		
 		this.collection.update(busqueda, updateQuery);
 
 		///////////////////////////////////// Miramos a ver si los usuarios del grupo es igual a 0 /////////////////////////////
@@ -240,8 +240,7 @@ public class Grupo {
 
 		}
 
-		// Si lo encontramos borramos, sino damos el admin al siguiente(falta
-		// comprobar)
+		// Si lo encontramos borramos, sino damos el admin al siguiente(falta comprobar)
 		if (encontrado) {
 
 			this.collection.remove(updateQuery);
@@ -250,11 +249,9 @@ public class Grupo {
 
 		} else {
 			// Falta
-			updateQuery = new BasicDBObject("$pull", new BasicDBObject(
-					"usuarios", new BasicDBObject("admin", true).append(
-							"$slice", 1)));
-
-			this.collection = db.getCollection("grupo");
+			updateQuery = new BasicDBObject("$set", new BasicDBObject(
+					"usuarios.0.admin", true));
+			System.out.println(updateQuery);
 			this.collection.update(busqueda, updateQuery);
 		}
 
