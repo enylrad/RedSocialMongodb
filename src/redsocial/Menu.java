@@ -21,10 +21,9 @@ public class Menu {
 	 * @param db
 	 * @throws InterruptedException
 	 */
-	public void menuPrincipal(Mongo mongoClient, DB db)
+	public void menuPrincipal(DB db)
 			throws InterruptedException {
 
-		this.mongoClient = mongoClient;
 		this.db = db;
 
 		int opcion = -1;
@@ -239,13 +238,13 @@ public class Menu {
 
 	}
 
-	// //////////////////////////////////////FIN
-	// MENUS///////////////////////////////////////////////////////////
+	// //////////////////////////////////////FIN MENUS///////////////////////////////////////////////////////////
 
 	// //////////////////////////////////////GESTIONES///////////////////////////////////////////////////////////
 
 	/**
 	 * Creación del nuevo usuario
+	 * ATENCIÓN: En esta practica no se encripta la contraseña, tener en cuenta
 	 */
 	public static void nuevoUsuario() {
 
@@ -275,13 +274,13 @@ public class Menu {
 		} while (!contrasenya.equals(repcontrasenya));
 
 		System.out.println("Dirección,");
-		System.out.print("Calle: ");
+		System.out.print("\tCalle: ");
 		direccion[0] = registro.nextLine();
-		System.out.print("Nº: ");
+		System.out.print("\tNº: ");
 		direccion[1] = registro.nextLine();
-		System.out.print("Localidad: ");
+		System.out.print("\tLocalidad: ");
 		direccion[2] = registro.nextLine();
-		System.out.print("C.P: ");
+		System.out.print("\tC.P: ");
 		direccion[3] = registro.nextLine();
 
 		Usuario u = new Usuario();
@@ -402,8 +401,9 @@ public class Menu {
 	 * Union de grupos
 	 * 
 	 * @param u
+	 * @throws InterruptedException 
 	 */
-	public static void unirseGrupo(Usuario u) {
+	public static void unirseGrupo(Usuario u) throws InterruptedException {
 
 		ArrayList<Grupo> grupos = Grupo.mostrarGruposLibres(u, db);
 
@@ -434,7 +434,12 @@ public class Menu {
 
 					} else {
 
+						System.out.println("Uniendose a grupo "
+								+ grupos.get(opcion-1).getNombre() + "...");
+						Thread.sleep(1000);
+						System.out.println("...");
 						grupos.get(opcion - 1).unirseGrupo(u, db);
+						System.out.println("Se ha unido al grupo");
 
 					}
 
@@ -457,8 +462,9 @@ public class Menu {
 	 * Salida de grupos
 	 * 
 	 * @param u
+	 * @throws InterruptedException 
 	 */
-	public static void salirGrupo(Usuario u) {
+	public static void salirGrupo(Usuario u) throws InterruptedException {
 
 		System.out.println("¿En que grupo desea darse de baja?: ");
 
@@ -489,9 +495,13 @@ public class Menu {
 
 					} else {
 
-						System.out.println("Ha salido del grupo");
-
+						
+						System.out.println("Dandose de baja del grupo "
+								+ grupos.get(opcion-1).getNombre() + "...");
+						Thread.sleep(1000);
+						System.out.println("...");
 						grupos.get(opcion - 1).salirGrupo(u, db);
+						System.out.println("Ha salido del grupo");
 
 					}
 
@@ -604,7 +614,7 @@ public class Menu {
 						opcion = -1;
 
 					} else {
-
+						
 						grupos.get(opcion - 1).visualizarUsuarios(db);
 
 					}
@@ -740,7 +750,6 @@ public class Menu {
 
 	}
 
-	// /////////////////////////////////////////////FIN
-	// GESTIONES//////////////////////////////////////////////////
+	///////////////////////////////////////////////FIN GESTIONES//////////////////////////////////////////////////
 
 }
