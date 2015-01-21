@@ -1,5 +1,7 @@
 package redsocial;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -69,6 +71,7 @@ public class Grupo {
 
 	/**
 	 * Metodo para la creación de un grupo
+	 * 
 	 * @param nombre
 	 * @param db
 	 * @param u
@@ -80,17 +83,18 @@ public class Grupo {
 		BasicDBObject doc = new BasicDBObject();
 		doc.put("nombre", nombre);
 		doc.put("usuarios",
-				Arrays.asList(new BasicDBObject("usuario", u.getId())
-						.append("fecha_ingreso", now).append("admin", true)));
+				Arrays.asList(new BasicDBObject("usuario", u.getId()).append(
+						"fecha_ingreso", now).append("admin", true)));
 		doc.put("total_usuarios", 1);
 		doc.put("total_comentarios", 0);
 
 		this.collection = db.getCollection("grupo");
-		collection.save(doc);
+		this.collection.save(doc);
 	}
 
 	/**
 	 * Borrado de Grupo
+	 * 
 	 * @param db
 	 */
 	public void borrarGrupo(DB db) {
@@ -105,6 +109,7 @@ public class Grupo {
 
 	/**
 	 * Incremento de los comentarios escritos
+	 * 
 	 * @param db
 	 */
 	public void incrementarComentario(DB db) {
@@ -121,69 +126,258 @@ public class Grupo {
 	}
 	
 	/**
-	 * Quitar usuario del grupo
+	 * Metodo para disminuir varios Comentarios
+	 * @param db
+	 * @param num
 	 */
-	public void salirGrupo(Usuario u, DB db){
+	public void disminuirComentarios(DB db, int num){
 		
-		//Borramos el Usuario del grupo
+		for(int i=0; i<num; i++){
+			
+			this.total_comentarios--;
+			
+		}
+
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 
-		DBObject updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("usuario", u.getId())));
-		
+		DBObject updateQuery = new BasicDBObject("$set", new BasicDBObject(
+				"total_comentarios", this.total_comentarios));
 		this.collection = db.getCollection("grupo");
+
 		this.collection.update(busqueda, updateQuery);
 		
-		//Bajamos en un usuario el grupo
+	}
+
+	/**
+	 * Incrementar usuarios totales
+	 * 
+	 * @param db
+	 */
+	public void incrementarUsuarios(DB db) {
+
+		this.total_usuarios++;
+
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$set", new BasicDBObject(
+				"total_usuarios", this.total_usuarios));
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+
+	}
+
+	/**
+	 * Disminuir usuarios totales
+	 * 
+	 * @param db
+	 */
+	public void disminuirUsuarios(DB db) {
+
 		this.total_usuarios--;
+
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$set", new BasicDBObject(
+				"total_usuarios", this.total_usuarios));
+		this.collection = db.getCollection("grupo");
+
+		this.collection.update(busqueda, updateQuery);
+
+	}
+
+	/**
+	 * Quitar usuario del grupo
+	 */
+	public void salirGrupo(Usuario u, DB db) {
+
+		/////////////////////////////// Borramos el Usuario del grupo //////////////////////////////////////////////
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		DBObject updateQuery = new BasicDBObject("$pull", new BasicDBObject(
+				"usuarios", new BasicDBObject("usuario", u.getId())));
+
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+
+		this.disminuirUsuarios(db);
+
+		////////////////////////////////// Borramos los comentarios del usuario ////////////////////////////////////
+		busqueda = new BasicDBObject("_id", this.id);
+		updateQuery = new BasicDBObject("$pull", new BasicDBObject(
+				"comentario", new BasicDBObject("usuario", u.getId())));
+
+		this.collection = db.getCollection("grupo");
+		this.collection.update(busqueda, updateQuery);
+
+		/////////////////////////////////////Disminuir varios comentarios ////////////////////////////////////////////
+		DBCursor cursor = collection.find(updateQuery);
+		for (DBObject grupo : cursor) {
+			
+			ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
+			
+			disminuirComentarios(db, comentarios.size());			
+
+		}
+
+		////////////////////////////////////// Bajamos en uno el usuario del grupo ///////////////////////////////////////////
 
 		updateQuery = new BasicDBObject("$set", new BasicDBObject(
 				"total_usuarios", this.total_usuarios));
 		this.collection = db.getCollection("grupo");
 		this.collection.update(busqueda, updateQuery);
-		
-		//Miramos a ver si los usuarios del grupo es igual a 0
-		updateQuery = new BasicDBObject("usuarios", new BasicDBObject("$size", 0));
-		
-		DBCursor cursor = collection.find(updateQuery);
-		
+
+		///////////////////////////////////// Miramos a ver si los usuarios del grupo es igual a 0 /////////////////////////////
+		updateQuery = new BasicDBObject("usuarios", new BasicDBObject("$size",
+				0));
+
+		cursor = collection.find(updateQuery);
+
 		boolean encontrado = false;
-		
+
 		for (DBObject usuario : cursor) {
 
 			encontrado = true;
-			
+
 		}
-		
-		//Si lo encontramos borramos, sino damos el admin al siguiente(falta comprobar)
-		if(encontrado){
-			
+
+		// Si lo encontramos borramos, sino damos el admin al siguiente(falta
+		// comprobar)
+		if (encontrado) {
+
 			this.collection.remove(updateQuery);
-			System.out.println("Se a eliminado el grupo " + this.getNombre() + " ya que no queda ningun usuario");
-			
-		}else{
-			
-			updateQuery = new BasicDBObject("$pull", new BasicDBObject("usuarios", new BasicDBObject("admin", true).append("$slice", 1)));
-			
+			System.out.println("Se a eliminado el grupo " + this.getNombre()
+					+ " ya que no queda ningun usuario");
+
+		} else {
+			// Falta
+			updateQuery = new BasicDBObject("$pull", new BasicDBObject(
+					"usuarios", new BasicDBObject("admin", true).append(
+							"$slice", 1)));
+
+			this.collection = db.getCollection("grupo");
+			this.collection.update(busqueda, updateQuery);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Metodo para la union de un grupo 
+	 * Metodo para la union de un grupo
 	 */
 	public void unirseGrupo(Usuario u, DB db) {
-		
+
 		Date now = new Date();
-		
+
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 
-		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject("usuarios", new BasicDBObject("usuario", u.getId())
-		.append("fecha_ingreso", now).append("admin", true)));
+		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject(
+				"usuarios", new BasicDBObject("usuario", u.getId()).append(
+						"fecha_ingreso", now).append("admin", false)));
 		this.collection = db.getCollection("grupo");
 
 		this.collection.update(busqueda, updateQuery);
 
-		
+		this.incrementarUsuarios(db);
+
+	}
+
+	/**
+	 * Metodo para añdir un comentarío en el grupo indicado
+	 * 
+	 * @param grupo
+	 * @param comentario
+	 * @param db
+	 */
+	public void anyadirComentario(Usuario usuario, String comentario, DB db) {
+
+		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
+
+		Date now = new Date();
+
+		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject(
+				"comentario", new BasicDBObject("texto", comentario).append(
+						"usuario", usuario.getId()).append("fecha", now)));
+
+		this.collection = db.getCollection("grupo");
+
+		this.collection.update(busqueda, updateQuery);
+
+		this.incrementarComentario(db);
+
+	}
+
+	/**
+	 * 
+	 * @param db
+	 */
+	public void visualizarComentarios(DB db) {
+
+		System.out.println("Grupo: " + this.nombre);
+
+		DateFormat f = new SimpleDateFormat("EEEE MMMM d HH:mm:ss z yyyy");
+		ObjectId id_usuario = null;
+		String texto = "";
+		Date fecha = null;
+		String nombre = "";
+
+		BasicDBObject query = new BasicDBObject("_id", this.id);
+		this.collection = db.getCollection("grupo");
+
+		DBCursor cursor = collection.find(query);
+		for (DBObject grupo : cursor) {
+			// Idea de Nando!
+			ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
+
+			for (int i = 0; i < comentarios.size(); i++) {
+
+				texto = (String) comentarios.get(i).get("texto");
+				id_usuario = (ObjectId) comentarios.get(i).get("usuario");
+				fecha = (Date) comentarios.get(i).get("fecha");
+
+				nombre = Usuario.averiguarNombre(id_usuario, db);
+
+				System.out.println("Comentario: " + texto + " - Fecha: "
+						+ f.format(fecha) + " - Usuario: " + nombre);
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Metodo para visualizar los usuarios del grupo
+	 * @param db
+	 */
+	public void visualizarUsuarios(DB db) {
+
+		System.out.println("Grupo: " + this.nombre);
+
+		DateFormat f = new SimpleDateFormat("EEEE MMMM d HH:mm:ss z yyyy");
+		ObjectId id_usuario = null;
+		Date fecha = null;
+		String nombre = "";
+
+		BasicDBObject query = new BasicDBObject("_id", this.id);
+		this.collection = db.getCollection("grupo");
+
+		DBCursor cursor = collection.find(query);
+		for (DBObject grupo : cursor) {
+			// Idea de Nando!
+			ArrayList<DBObject> usuarios = (ArrayList<DBObject>) grupo.get("usuarios");
+
+			for (int i = 0; i < usuarios.size(); i++) {
+
+				id_usuario = (ObjectId) usuarios.get(i).get("usuario");
+				fecha = (Date) usuarios.get(i).get("fecha_ingreso");
+
+				nombre = Usuario.averiguarNombre(id_usuario, db);
+
+				System.out.println("Usuario: " + nombre + " - Fecha: "
+						+ f.format(fecha));
+
+			}
+
+		}
 
 	}
 
@@ -191,6 +385,7 @@ public class Grupo {
 
 	/**
 	 * Mostrar grupos en los que el usuario es administrador
+	 * 
 	 * @param u
 	 * @param db
 	 * @return
@@ -223,6 +418,7 @@ public class Grupo {
 
 	/**
 	 * Metodo para buscar todos los grupos donde esta un usuario
+	 * 
 	 * @param u
 	 * @param db
 	 * @return
@@ -251,19 +447,22 @@ public class Grupo {
 		return grupos;
 
 	}
-	
+
 	/**
 	 * Metodo que busca todos los usuarios donde no esta inscrito el usuario
+	 * 
 	 * @param u
 	 * @param db
 	 * @return
 	 */
 	public static ArrayList<Grupo> mostrarGruposLibres(Usuario u, DB db) {
-		//Faltan desarrollar grupos libres.
+		// Faltan desarrollar grupos libres.
 
 		ArrayList<Grupo> grupos = new ArrayList<>();
 
-		BasicDBObject query = new BasicDBObject(new BasicDBObject("usuarios", new BasicDBObject("$not", new BasicDBObject("$elemMatch", new BasicDBObject("usuario", u.getId())))));
+		BasicDBObject query = new BasicDBObject(new BasicDBObject("usuarios",
+				new BasicDBObject("$not", new BasicDBObject("$elemMatch",
+						new BasicDBObject("usuario", u.getId())))));
 
 		DBCollection col = db.getCollection("grupo");
 		DBCursor cursor = col.find(query);

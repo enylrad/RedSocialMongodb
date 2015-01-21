@@ -1,9 +1,5 @@
 package redsocial;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -100,6 +96,7 @@ public class Usuario {
 
 	/**
 	 * Creación de usuario en la base de datos
+	 * 
 	 * @param nombre
 	 * @param apellido
 	 * @param correo
@@ -122,12 +119,13 @@ public class Usuario {
 						.append("codigo postal", direccion[3]));
 
 		this.collection = db.getCollection("usuario");
-		collection.save(doc);
+		this.collection.save(doc);
 
 	}
 
 	/**
 	 * Metodo para verificar el login y recoger el usuario
+	 * 
 	 * @param correo
 	 * @param contrasenya
 	 * @param db
@@ -135,10 +133,6 @@ public class Usuario {
 	 */
 	public boolean logear(String correo, String contrasenya, DB db) {
 
-		/*
-		 * Con la clase BasicDBObject tambien creamos objetos con los que hacer
-		 * consultas
-		 */
 		BasicDBObject query = new BasicDBObject("contrasenya", contrasenya)
 				.append("correo", correo);
 		this.collection = db.getCollection("usuario");
@@ -166,29 +160,8 @@ public class Usuario {
 	}
 
 	/**
-	 * Metodo para añdir un comentarío en el grupo indicado
-	 * @param grupo
-	 * @param comentario
-	 * @param db
-	 */
-	public void anyadirComentario(Grupo grupo, String comentario, DB db) {
-
-		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
-		
-		Date now = new Date();
-
-		DBObject updateQuery = new BasicDBObject("$push", new BasicDBObject(
-				"comentario", new BasicDBObject("texto", comentario).append(
-						"grupo", grupo.getId()).append("fecha", now)));
-
-		collection.update(busqueda, updateQuery);
-
-		grupo.incrementarComentario(db);
-
-	}
-
-	/**
 	 * Metodo para dar de Baja a un usuario
+	 * 
 	 * @param db
 	 */
 	public void darBaja(DB db) {
@@ -199,40 +172,31 @@ public class Usuario {
 		this.collection.remove(query);
 
 	}
-	
-	//FALTA DESARROLLAR
+
+	// //////////////////////////////////////METODOS STATIC/////////////////////////////////////
+
 	/**
-	 * Visualizará comentarios de los grupos a los que pertenece el usuario
+	 * Metodo para averiguar el nombre del usuario
+	 * @param id_usuario
 	 * @param db
+	 * @return
 	 */
-	public void visualizarComentarios(DB db, Grupo g){
-		
-		ArrayList<Grupo> grupos = new ArrayList<>();
-		
-		System.out.println("Comentarios del grupo " +g.getNombre() + ":");
-		
-		SimpleDateFormat fecha = new SimpleDateFormat("dd/MM/yyyy");
-		SimpleDateFormat hora = new SimpleDateFormat("HH:mm:ss");
-		String comentario = "";
-		Date f;
-		String autor = "";
+	public static String averiguarNombre(ObjectId id_usuario, DB db) {
 
-		BasicDBObject query = new BasicDBObject(new BasicDBObject("comentario", new BasicDBObject("$elemMatch", new BasicDBObject("grupo", g.getId()))));
+		String nombre = "";
 
-		DBCollection col = db.getCollection("usuario");
-		DBCursor cursor = col.find(query);
+		BasicDBObject query = new BasicDBObject("_id", id_usuario);
+		DBCollection collection = db.getCollection("usuario");
+
+		DBCursor cursor = collection.find(query);
 		for (DBObject usuario : cursor) {
 
-			comentario = (String) usuario.get("comenatario.texto");
-			f = (Date) usuario.get("comentario.fecha");
-			autor = (String) usuario.get("usuario");
-
-			System.out.println(comentario + " - " + fecha.format(f) + " - " + " - " + hora.format(f) + " - " + autor);
+			nombre = (String) usuario.get("nombre");
 
 		}
 
-		
-		
+		return nombre;
+
 	}
 
 }
