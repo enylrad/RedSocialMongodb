@@ -310,7 +310,7 @@ public class Grupo {
 			// Falta
 			updateQuery = new BasicDBObject("$set", new BasicDBObject(
 					"usuarios.0.admin", true));
-			System.out.println(updateQuery);
+			
 			this.collection.update(busqueda, updateQuery);
 		}
 		

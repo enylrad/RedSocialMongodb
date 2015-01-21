@@ -82,8 +82,9 @@ public class Menu {
 	 * Menu de la red social una vez iniciada la sesion
 	 * 
 	 * @param u
+	 * @throws InterruptedException 
 	 */
-	public static void menuRedSocial(Usuario u) {
+	public static void menuRedSocial(Usuario u) throws InterruptedException {
 
 		int opcion = -1;
 
@@ -147,8 +148,9 @@ public class Menu {
 	 * Menu de gestion de grupos
 	 * 
 	 * @param u
+	 * @throws InterruptedException 
 	 */
-	public static void menuGrupo(Usuario u) {
+	public static void menuGrupo(Usuario u) throws InterruptedException {
 
 		int opcion = -1;
 
@@ -291,8 +293,9 @@ public class Menu {
 
 	/**
 	 * Gestión del inicio de sesión
+	 * @throws InterruptedException 
 	 */
-	public static void Logear() {
+	public static void Logear() throws InterruptedException {
 
 		String correo = "", pass = "";
 
