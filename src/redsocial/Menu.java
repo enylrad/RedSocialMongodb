@@ -606,7 +606,7 @@ public class Menu {
 
 					if(opcion == 0){
 						
-						System.out.println("Volviendo al menu");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 						
 					}else{
@@ -675,7 +675,7 @@ public class Menu {
 
 					if(opcion == 0){
 						
-						System.out.println("Volviendo al menu");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 						
 					}else{
@@ -738,7 +738,7 @@ public class Menu {
 
 					if(opcion == 0){
 						
-						System.out.println("Volviendo al menu");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 						
 					}else{
@@ -796,8 +796,7 @@ public class Menu {
 	
 					}
 	
-					System.out
-							.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
+					System.out.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
 	
 				}
 	
