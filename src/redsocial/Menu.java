@@ -160,9 +160,9 @@ public class Menu {
 			System.out.println("\t3 - Unirse Grupo");
 			System.out.println("\t4 - Comentar en Grupo");
 			System.out.println("\t5 - Visualizar Comentarios");
-			System.out
-					.println("\t6 - Listar usuarios de localidad de un grupo");
-			System.out.println("\t7 - Salir Grupo");
+			System.out.println("\t6 - Listar usuarios de localidad de un grupo");
+			System.out.println("\t7 - Listar grupos con numero de usuarios");
+			System.out.println("\t8 - Salir Grupo");
 			System.out.println("\t0 - Volver");
 			System.out.print("Introduzca una opción: ");
 
@@ -208,6 +208,11 @@ public class Menu {
 					break;
 
 				case 7:
+					Grupo.numeroUsuariosGrupos(u, db);
+					
+					break;
+					
+				case 8:
 
 					salirGrupo(u);
 
@@ -797,8 +802,7 @@ public class Menu {
 
 				if (grupos.size() > 0) {
 
-					System.out
-							.println("Es administrador de los siguientes grupos: ");
+					System.out.println("Es administrador de los siguientes grupos: ");
 
 					for (int i = 0; i < grupos.size(); i++) {
 
@@ -806,13 +810,11 @@ public class Menu {
 
 					}
 
-					System.out
-							.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
+					System.out.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
 
 				}
 
-				System.out
-						.println("Se va a procederá a darle de baja del servicio, ¿Esta seguro?: ");
+				System.out.print("Se va a procederá a darle de baja del servicio, ¿Esta seguro?: ");
 				respuesta = registro.nextLine();
 
 				if (Character.toString(respuesta.charAt(0)).equalsIgnoreCase(

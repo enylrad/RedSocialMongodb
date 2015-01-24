@@ -190,11 +190,7 @@ public class Grupo {
 		this.borrarUsuarioGrupo(u, db);
 
 		// Borramos los comentarios del usuario y disminuimos total_comentarios		
-		this.borrarComentarios(u, db);
-
-		//Bajamos en uno el usuario del grupo
-		this.disminuirUsuarios(db);
-		
+		this.borrarComentarios(u, db);		
 
 		//Miramos a ver si los usuarios del grupo es igual a 0
 		this.comprobarVacio(db);
@@ -268,6 +264,8 @@ public class Grupo {
 		
 		this.collection = db.getCollection("grupo");
 		
+		this.total_usuarios--;
+		
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
 		
 		BasicDBObject updateQuery = new BasicDBObject("$set", new BasicDBObject(
@@ -275,12 +273,6 @@ public class Grupo {
 		
 		this.collection.update(busqueda, updateQuery);
 
-		this.total_usuarios--;
-
-		updateQuery = new BasicDBObject("$set", new BasicDBObject(
-				"total_usuarios", this.total_usuarios));
-
-		this.collection.update(busqueda, updateQuery);
 
 	}
 	
@@ -434,10 +426,7 @@ public class Grupo {
 
 		System.out.println("Usuarios del grupo " + this.nombre + " y localidad " + localidad + ":");
 
-		DateFormat f = new SimpleDateFormat("EEEE MMMM d HH:mm:ss z yyyy");
 		ObjectId id_usuario = null;
-		Date fecha = null;
-		String nombre = "";
 		
 		BasicDBObject query = new BasicDBObject("_id", this.id);
 
@@ -450,18 +439,15 @@ public class Grupo {
 			for (int i = 0; i < usuarios.size(); i++) {
 
 				id_usuario = (ObjectId) usuarios.get(i).get("usuario");
-				fecha = (Date) usuarios.get(i).get("fecha_ingreso");
 
 				Usuario usuario = new Usuario();
 				usuario.averiguarUsuario(id_usuario, db);
 				
 				//Comrpobamos que la localidades coinciden
 				if(u.getDireccion()[2].equals(usuario.getDireccion()[2])){
-				
-					nombre = usuario.getUsuario();
 	
-					System.out.println("Usuario: " + nombre + " - Fecha: "
-							+ f.format(fecha));
+					System.out.println("Usuario: " + usuario.getUsuario() + " - Correo: "
+							+ usuario.getCorreo());
 					
 				}
 
@@ -597,6 +583,30 @@ public class Grupo {
 
 		return grupos;
 
+	}
+	
+	/**
+	 * Muestra todos los grupos y el número de usuarios de cada uno
+	 * @param u Grupos del usuario que deseamos consultar
+	 * @param db
+	 */
+	public static void numeroUsuariosGrupos(Usuario u, DB db){
+
+		BasicDBObject query = new BasicDBObject();
+		query.put("usuarios.usuario", u.getId());
+
+		DBCollection col = db.getCollection("grupo");
+
+		DBCursor cursor = col.find(query);
+		for (DBObject grupo : cursor) {
+
+			String nombre = (String) grupo.get("nombre");
+			int total_usuarios = (int) grupo.get("total_usuarios");
+
+			System.out.println("Grupo: " + nombre + " - Total usuarios: " + total_usuarios + ".");
+
+		}
+		
 	}
 	
 ///////////////////////////////////////////////FIN METODOS STATIC////////////////////////////////////////////////////
