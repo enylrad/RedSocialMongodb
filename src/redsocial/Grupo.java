@@ -386,18 +386,28 @@ public class Grupo {
 			// Idea de Nando!
 			@SuppressWarnings("unchecked")
 			ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
+			
+			if(comentarios != null){
 
-			for (int i = 0; i < comentarios.size(); i++) {
-
-				texto = (String) comentarios.get(i).get("texto");
-				id_usuario = (ObjectId) comentarios.get(i).get("usuario");
-				fecha = (Date) comentarios.get(i).get("fecha");
-
-				nombre = Usuario.averiguarNombre(id_usuario, db);
-
-				System.out.println("Comentario: " + texto + " - Fecha: "
-						+ f.format(fecha) + " - Usuario: " + nombre);
-
+				for (int i = 0; i < comentarios.size(); i++) {
+	
+					texto = (String) comentarios.get(i).get("texto");
+					id_usuario = (ObjectId) comentarios.get(i).get("usuario");
+					fecha = (Date) comentarios.get(i).get("fecha");
+	
+					Usuario usuario = new Usuario();
+					usuario.averiguarUsuario(id_usuario, db);
+					
+					nombre = usuario.getUsuario();
+	
+					System.out.println("Comentario: " + texto + " - Fecha: "
+							+ f.format(fecha) + " - Usuario: " + nombre);
+	
+				}
+			}else{
+				
+				System.out.println("No hay comentarios en este grupo.");
+				
 			}
 
 		}
@@ -408,17 +418,19 @@ public class Grupo {
 	 * Metodo para visualizar los usuarios del grupo
 	 * @param db
 	 */
-	public void visualizarUsuarios(DB db) {
+	public void visualizarUsuariosLocalidad(Usuario u, DB db) {
 		
 		this.collection = db.getCollection("grupo");
+		
+		String localidad = u.getDireccion()[2];
 
-		System.out.println("Usuarios del grupo " + this.nombre + ":");
+		System.out.println("Usuarios del grupo " + this.nombre + " y localidad " + localidad + ":");
 
 		DateFormat f = new SimpleDateFormat("EEEE MMMM d HH:mm:ss z yyyy");
 		ObjectId id_usuario = null;
 		Date fecha = null;
 		String nombre = "";
-
+		
 		BasicDBObject query = new BasicDBObject("_id", this.id);
 
 		DBCursor cursor = collection.find(query);
@@ -432,10 +444,16 @@ public class Grupo {
 				id_usuario = (ObjectId) usuarios.get(i).get("usuario");
 				fecha = (Date) usuarios.get(i).get("fecha_ingreso");
 
-				nombre = Usuario.averiguarNombre(id_usuario, db);
-
-				System.out.println("Usuario: " + nombre + " - Fecha: "
-						+ f.format(fecha));
+				Usuario usuario = new Usuario();
+				usuario.averiguarUsuario(id_usuario, db);
+				
+				if(u.getDireccion()[2].equals(usuario.getDireccion()[2])){
+				
+					nombre = usuario.getUsuario();
+	
+					System.out.println("Usuario: " + nombre + " - Fecha: "
+							+ f.format(fecha));
+				}
 
 			}
 
@@ -463,16 +481,38 @@ public class Grupo {
 		query.put("usuarios.admin", true);
 
 		DBCollection col = db.getCollection("grupo");
+		
+		boolean encontrado = false; //Variable para ver si ha sido encontrado el admin
 
 		DBCursor cursor = col.find(query);
 		for (DBObject grupo : cursor) {
+			
+			encontrado = false;
 
 			ObjectId id = (ObjectId) grupo.get("_id");
 			String nombre = (String) grupo.get("nombre");
 			int total_usuarios = (int) grupo.get("total_usuarios");
 			int total_comentarios = (int) grupo.get("total_comentarios");
-
-			grupos.add(new Grupo(id, nombre, total_usuarios, total_comentarios));
+				
+			//Recogemos los usuarios
+			ArrayList<DBObject> usuarios = (ArrayList<DBObject>) grupo.get("usuarios");
+			
+			for(int i=0; i<usuarios.size(); i++){
+				
+				ObjectId id_encontrada = (ObjectId) usuarios.get(i).get("usuario");
+				boolean admin = (Boolean) usuarios.get(i).get("admin");
+				
+				if((u.getId().equals(id_encontrada)) && admin){
+					System.out.println("entrado condicion");
+					encontrado = true;
+				}
+				
+			}
+			
+			if(encontrado){
+				System.out.println("añadido grupo");
+				grupos.add(new Grupo(id, nombre, total_usuarios, total_comentarios));
+			}
 
 		}
 

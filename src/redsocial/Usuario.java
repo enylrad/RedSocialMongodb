@@ -1,5 +1,8 @@
 package redsocial;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.BasicDBObject;
@@ -166,6 +169,36 @@ public class Usuario {
 		return false;
 
 	}
+	
+	/**
+	 * Metodo para averiguar el usuario apartir del ID
+	 * @param id_usuario
+	 * @param db
+	 */
+	public void averiguarUsuario(ObjectId id_usuario, DB db){
+		
+		BasicDBObject query = new BasicDBObject("_id", id_usuario);
+		DBCollection collection = db.getCollection("usuario");
+
+		DBCursor cursor = collection.find(query);
+		for (DBObject usuario : cursor) {
+
+			this.id = (ObjectId) usuario.get("_id");
+			this.usuario = usuario.get("nombre").toString();
+			this.apellido = usuario.get("apellido").toString();
+			this.correo = usuario.get("correo").toString();
+			this.contrasenya = usuario.get("contrasenya").toString();
+			DBObject direccion = (DBObject) usuario.get("direccion");
+
+			this.direccion[0] = (String) direccion.get("calle");
+			this.direccion[1] = (String) direccion.get("numero");
+			this.direccion[2] = (String) direccion.get("localidad");
+			this.direccion[3] = (String) direccion.get("codigo postal");
+
+		}
+		
+	}
+	
 
 	/**
 	 * Metodo para dar de Baja a un usuario
@@ -181,31 +214,47 @@ public class Usuario {
 
 	}
 	/////////////////////////////////////////FIN METODOS////////////////////////////////////////
-	////////////////////////////////////////METODOS STATIC//////////////////////////////////////
-
+	/////////////////////////////////////////METODOS STATICOS///////////////////////////////////
+	
 	/**
-	 * Metodo para averiguar el nombre del usuario
-	 * @param id_usuario
+	 * Metodo para comprobar si hay duplicados de correo electronico en la base de datos
+	 * @param correo
 	 * @param db
 	 * @return
 	 */
-	public static String averiguarNombre(ObjectId id_usuario, DB db) {
-
-		String nombre = "";
-
-		BasicDBObject query = new BasicDBObject("_id", id_usuario);
+	public static boolean comprobarDuplicados(String correo, DB db){
+		
+		BasicDBObject query = new BasicDBObject("correo", correo);
 		DBCollection collection = db.getCollection("usuario");
 
 		DBCursor cursor = collection.find(query);
 		for (DBObject usuario : cursor) {
 
-			nombre = (String) usuario.get("nombre");
+			return true;
 
 		}
-
-		return nombre;
-
+		
+		return false;
 	}
-	///////////////////////////////////////FIN METODOS STATIC//////////////////////////////////////
+	
+	/**
+	 * Metodo para comprobar que el correo electronico es valido
+	 * @param correo
+	 * @return
+	 */
+	public static boolean comprobarCorreo(String correo){
+		
+		String PATTERN_EMAIL = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+	            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		
+        Pattern pattern = Pattern.compile(PATTERN_EMAIL);
 
+        Matcher matcher = pattern.matcher(correo);
+        return matcher.matches();
+		
+	}
+	
+
+	/////////////////////////////////////////FIN METODOS STATICOS///////////////////////////////////
+	
 }

@@ -258,8 +258,31 @@ public class Menu {
 		nombre = registro.nextLine();
 		System.out.print("Apellidos: ");
 		apellido = registro.nextLine();
-		System.out.print("Correo: ");
-		correo = registro.nextLine();
+		
+		
+		boolean duplicado = false;
+		boolean correcto = true;
+		
+		do{
+			
+			if(duplicado){
+				System.out.println("El correo electronico ya ha sido registrado. \nIntentelo de nuevo");
+				duplicado = false;
+			}
+
+			if(!correcto){
+				System.out.println("El correo electronico introducido no es valido. \nIntentelo de nuevo.");
+				correcto = true;
+			}
+		
+			System.out.print("Correo: ");
+			correo = registro.nextLine();
+			
+			//Comprobaciones
+			duplicado = Usuario.comprobarDuplicados(correo, db);
+			correcto = Usuario.comprobarCorreo(correo);
+			
+		}while(duplicado || !correcto);
 
 		do {
 
@@ -333,7 +356,7 @@ public class Menu {
 		g.crearGrupo(nombre, db, u);
 
 	}
-
+	
 	/**
 	 * Eliminacion de grupos
 	 * 
@@ -359,26 +382,34 @@ public class Menu {
 								+ grupos.get(i).getNombre());
 
 					}
-
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
-
-						System.out.println("La opción no es válida");
-						opcion = -1;
-
-					} else {
-
-						String nombre = grupos.get(opcion - 1).getNombre();
-
-						System.out.println("Se va a proceder a borar el grupo "
-								+ nombre + "...");
+					if(opcion == 0){
+						
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
-						System.out.println("...");
-						grupos.get(opcion - 1).borrarGrupo(db);
-						Thread.sleep(1000);
-						System.out.println("Se ha borrado el grupo " + nombre);
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
+	
+						} else {
+	
+							String nombre = grupos.get(opcion - 1).getNombre();
+	
+							System.out.println("Se va a proceder a borar el grupo "
+									+ nombre + "...");
+							Thread.sleep(1000);
+							System.out.println("...");
+							grupos.get(opcion - 1).borrarGrupo(db);
+							Thread.sleep(1000);
+							System.out.println("Se ha borrado el grupo " + nombre);
+						}
 					}
 
 				} catch (NumberFormatException e) {
@@ -427,23 +458,33 @@ public class Menu {
 
 					}
 
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
-
-						System.out.println("La opción no es válida");
-						opcion = -1;
-
-					} else {
-
-						System.out.println("Uniendose a grupo "
-								+ grupos.get(opcion-1).getNombre() + "...");
+					if(opcion == 0){
+						
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
-						System.out.println("...");
-						grupos.get(opcion - 1).unirseGrupo(u, db);
-						System.out.println("Se ha unido al grupo");
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
 
+						} else {
+	
+							System.out.println("Uniendose a grupo "
+									+ grupos.get(opcion-1).getNombre() + "...");
+							Thread.sleep(1000);
+							System.out.println("...");
+							grupos.get(opcion - 1).unirseGrupo(u, db);
+							System.out.println("Se ha unido al grupo");
+	
+						}
+					
 					}
 
 				} catch (NumberFormatException e) {
@@ -488,24 +529,33 @@ public class Menu {
 
 					}
 
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
-
-						System.out.println("La opción no es válida");
-						opcion = -1;
-
-					} else {
-
+					if(opcion == 0){
 						
-						System.out.println("Dandose de baja del grupo "
-								+ grupos.get(opcion-1).getNombre() + "...");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
-						System.out.println("...");
-						grupos.get(opcion - 1).salirGrupo(u, db);
-						System.out.println("Ha salido del grupo");
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
 
+						} else {
+
+							
+							System.out.println("Dandose de baja del grupo "
+									+ grupos.get(opcion-1).getNombre() + "...");
+							Thread.sleep(1000);
+							System.out.println("...");
+							grupos.get(opcion - 1).salirGrupo(u, db);
+							System.out.println("Ha salido del grupo");
+	
+						}
 					}
 
 				} catch (NumberFormatException e) {
@@ -527,8 +577,9 @@ public class Menu {
 	 * Comentar en un grupo
 	 * 
 	 * @param u
+	 * @throws InterruptedException 
 	 */
-	public static void comentarGrupo(Usuario u) {
+	public static void comentarGrupo(Usuario u) throws InterruptedException {
 
 		System.out.println("¿En que grupo quieres comentar?: ");
 
@@ -549,23 +600,32 @@ public class Menu {
 
 					}
 
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
+					if(opcion == 0){
+						
+						System.out.println("Volviendo al menu");
+						Thread.sleep(1000);
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
 
-						System.out.println("La opción no es válida");
-						opcion = -1;
+						} else {
 
-					} else {
-
-						System.out.print("Comentario: ");
-
-						String comentario = registro.nextLine();
-
-						grupos.get(opcion - 1).anyadirComentario(u, comentario,
-								db);
-
+							System.out.print("Comentario: ");
+	
+							String comentario = registro.nextLine();
+	
+							grupos.get(opcion - 1).anyadirComentario(u, comentario,
+									db);
+	
+						}
 					}
 
 				} catch (NumberFormatException e) {
@@ -586,8 +646,9 @@ public class Menu {
 
 	/**
 	 * Listar usuarios de un grupo
+	 * @throws InterruptedException 
 	 */
-	public static void listarUsuariosGrupo(Usuario u) {
+	public static void listarUsuariosGrupo(Usuario u) throws InterruptedException {
 
 		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
 
@@ -608,18 +669,27 @@ public class Menu {
 
 					}
 
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
-
-						System.out.println("La opción no es válida");
-						opcion = -1;
-
-					} else {
+					if(opcion == 0){
 						
-						grupos.get(opcion - 1).visualizarUsuarios(db);
+						System.out.println("Volviendo al menu");
+						Thread.sleep(1000);
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
 
+						} else {
+						
+							grupos.get(opcion - 1).visualizarUsuariosLocalidad(u, db);
+	
+						}
 					}
 
 				} catch (NumberFormatException e) {
@@ -639,8 +709,9 @@ public class Menu {
 
 	/**
 	 * Listar comentarios de un grupo
+	 * @throws InterruptedException 
 	 */
-	public static void listarComentarios(Usuario u) {
+	public static void listarComentarios(Usuario u) throws InterruptedException {
 
 		ArrayList<Grupo> grupos = Grupo.mostrarGrupos(u, db);
 
@@ -661,18 +732,27 @@ public class Menu {
 
 					}
 
+					System.out.println("0 - Volver");
 					System.out.print("Elige una opción: ");
 					opcion = Integer.parseInt(registro.nextLine());
 
-					if (opcion > grupos.size() || opcion < 1) {
+					if(opcion == 0){
+						
+						System.out.println("Volviendo al menu");
+						Thread.sleep(1000);
+						
+					}else{
+						
+						if (opcion > grupos.size() || opcion < 1) {
+	
+							System.out.println("La opción no es válida");
+							opcion = -1;
 
-						System.out.println("La opción no es válida");
-						opcion = -1;
+						} else {
 
-					} else {
-
-						grupos.get(opcion - 1).visualizarComentarios(db);
-
+							grupos.get(opcion - 1).visualizarComentarios(db);
+	
+						}
 					}
 
 				} catch (NumberFormatException e) {
@@ -703,52 +783,57 @@ public class Menu {
 
 			ArrayList<Grupo> grupos = Grupo.mostrarGruposAdmin(u, db);
 
-			if (grupos.size() > 0) {
-
-				System.out
-						.println("Es administrador de los siguientes grupos: ");
-
-				for (int i = 0; i < grupos.size(); i++) {
-
-					System.out.println(grupos.get(i).getNombre());
-
-				}
-
-				System.out
-						.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
-
-			}
-
-			System.out
-					.println("Se va a procederá a darle de baja del servicio, ¿Esta seguro?: ");
-			respuesta = registro.nextLine();
-
-			if (Character.toString(respuesta.charAt(0)).equalsIgnoreCase("S")) {
-
-				u.darBaja(db);
-
+			if(grupos != null){
+			
 				if (grupos.size() > 0) {
-
+	
+					System.out
+							.println("Es administrador de los siguientes grupos: ");
+	
 					for (int i = 0; i < grupos.size(); i++) {
-
-						grupos.get(i).salirGrupo(u, db);
-
+	
+						System.out.println(grupos.get(i).getNombre());
+	
 					}
-
+	
+					System.out
+							.println("Se le dará el derecho de administración al siguiente usuario en la lista.");
+	
 				}
-
-				System.out.println("Se ha dado de baja correctamente.");
-				return true;
-
-			} else if (Character.toString(respuesta.charAt(0))
-					.equalsIgnoreCase("N")) {
-
+	
 				System.out
-						.println("Gracias por seguir con nosotros :), se le devolvera al menu");
-				return false;
+						.println("Se va a procederá a darle de baja del servicio, ¿Esta seguro?: ");
+				respuesta = registro.nextLine();
+	
+				if (Character.toString(respuesta.charAt(0)).equalsIgnoreCase("S")) {
+	
+					u.darBaja(db);
+	
+					if (grupos.size() > 0) {
+	
+						for (int i = 0; i < grupos.size(); i++) {
+	
+							grupos.get(i).salirGrupo(u, db);
+	
+						}
+	
+					}
+	
+					System.out.println("Se ha dado de baja correctamente.");
+					return true;
+	
+				} else if (Character.toString(respuesta.charAt(0))
+						.equalsIgnoreCase("N")) {
+	
+					System.out.println("Gracias por seguir con nosotros :), se le devolvera al menu");
+					return false;
+				}
+	
+				System.out.println("La respuesta no es correcta.");
+				
+			}else{
+				System.out.println("No es administrador de ningun grupo.");
 			}
-
-			System.out.println("La respuesta no es correcta.");
 		}
 
 	}

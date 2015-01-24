@@ -7,7 +7,7 @@ import com.mongodb.MongoException;
 
 public class Red {
 
-	private static String dir = "192.168.11.174"; //IP a conectarse
+	private static String dir = "127.0.0.1"; //IP a conectarse
 	private static int socket = 27017; //Socket a conectarse
 	private static String BBDD = "redsocialDavid"; //Base de datos en la que trabajaremos
 
