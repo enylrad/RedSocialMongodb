@@ -228,7 +228,7 @@ public class Usuario {
 		DBCollection collection = db.getCollection("usuario");
 
 		DBCursor cursor = collection.find(query);
-		for (DBObject usuario : cursor) {
+		for (@SuppressWarnings("unused") DBObject usuario : cursor) {
 
 			return true;
 

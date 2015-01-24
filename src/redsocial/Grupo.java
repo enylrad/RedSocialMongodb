@@ -76,19 +76,19 @@ public class Grupo {
 	}
 
 	/////////////////////////FIN GET Y SET//////////////////////////
-	/////////////////////////////////////////////////METODOS/////////////////////////////////////////////////
+	/////////////////////////METODOS////////////////////////////////
 	/**
-	 * Metodo para la creación de un grupo
+	 * Metodo para la creación de un grupo nuevo
 	 * 
-	 * @param nombre
-	 * @param db
-	 * @param u
+	 * @param nombre nombre que tendrá el grupo
+	 * @param db 
+	 * @param u Usuario que desea crear el grupo
 	 */
 	public void crearGrupo(String nombre, DB db, Usuario u) {
 
 		this.collection = db.getCollection("grupo");
-		
-		Date now = new Date();
+
+		Date now = new Date(); //Fecha actual
 
 		BasicDBObject doc = new BasicDBObject();
 		doc.put("nombre", nombre);
@@ -97,12 +97,13 @@ public class Grupo {
 						"fecha_ingreso", now).append("admin", true)));
 		doc.put("total_usuarios", 1);
 		doc.put("total_comentarios", 0);
-		
+
 		this.collection.save(doc);
+		
 	}
 
 	/**
-	 * Borrado de Grupo
+	 * Borrado de el grupo
 	 * 
 	 * @param db
 	 */
@@ -117,7 +118,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Incremento de los comentarios escritos
+	 * Incremento de los comentarios escritos en el grupo actual
 	 * 
 	 * @param db
 	 */
@@ -130,16 +131,20 @@ public class Grupo {
 
 		DBObject updateQuery = new BasicDBObject("$set", new BasicDBObject(
 				"total_comentarios", this.total_comentarios));
+		
 		this.collection.update(busqueda, updateQuery);
 
 	}
 	
 	
-	
+	/**
+	 * Disminuir comentarios escritos en el grupo actual
+	 * @param db
+	 * @param num número de comentarios que existen actualmente en el grupo
+	 */
 	public void disminuirComentarios(DB db, int num){
 		
 		this.collection = db.getCollection("grupo");
-		
 		this.total_comentarios = num;
 
 		BasicDBObject busqueda = new BasicDBObject("_id", this.id);
@@ -152,7 +157,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Incrementar usuarios totales
+	 * Incrementar usuarios totales en el grupo actual
 	 * 
 	 * @param db
 	 */
@@ -172,7 +177,10 @@ public class Grupo {
 	}
 	
 	/**
-	 * Quitar usuario del grupo
+	 * Quitar usuario del grupo actual
+	 *
+	 * @param u Usuario que deseamos que salga del grupo
+	 * @param db
 	 */
 	public void salirGrupo(Usuario u, DB db) {
 		
@@ -189,13 +197,13 @@ public class Grupo {
 		
 
 		//Miramos a ver si los usuarios del grupo es igual a 0
-		this.comprobarVacio(u, db);
+		this.comprobarVacio(db);
 		
 	}
 	
 	/**
-	 * Metodo para borrar los usuarios del grupo
-	 * @param u
+	 * Borrar los usuario del grupo
+	 * @param u Usuario que se desea sacar del grupo
 	 * @param db
 	 */
 	public void borrarUsuarioGrupo(Usuario u, DB db){
@@ -214,9 +222,11 @@ public class Grupo {
 	}
 	
 	/**
-	 * Metodo para borrar comentarios y disminuir varios Comentarios
+	 * 	/**
+	 * Borrado de comentarios y disminuir varios Comentarios
+
+	 * @param u Usuario del que se desea borrar los comentarios
 	 * @param db
-	 * @param num
 	 */
 	public void borrarComentarios(Usuario u, DB db){
 		
@@ -232,7 +242,6 @@ public class Grupo {
 		DBCursor cursor = this.collection.find(busqueda);
 		for (DBObject grupo : cursor) {
 			
-		
 				@SuppressWarnings("unchecked")
 				ArrayList<DBObject> comentarios = (ArrayList<DBObject>) grupo.get("comentario");
 			
@@ -251,7 +260,7 @@ public class Grupo {
 	}
 	
 	/**
-	 * Disminuir usuarios totales
+	 * Disminuir usuarios totales del grupo actual
 	 * 
 	 * @param db
 	 */
@@ -277,10 +286,9 @@ public class Grupo {
 	
 	/**
 	 * Metodo para comprobar si esta vacio el grupo(se borra) y si existe usuario pasar el admin
-	 * @param u
 	 * @param db
 	 */
-	public void comprobarVacio(Usuario u, DB db){
+	public void comprobarVacio(DB db){
 		
 		this.collection = db.getCollection("grupo");
 		
@@ -291,7 +299,7 @@ public class Grupo {
 
 		DBCursor cursor = collection.find(updateQuery);
 
-		boolean encontrado = false;
+		boolean encontrado = false; //Variable para comprobar que se ha encontrado usuarios
 
 		for (@SuppressWarnings("unused") DBObject usuario : cursor) {
 
@@ -318,7 +326,7 @@ public class Grupo {
 
 	
 	/**
-	 * Metodo para la union de un grupo
+	 * Union de un usuario al grupo actual
 	 */
 	public void unirseGrupo(Usuario u, DB db) {
 		
@@ -339,10 +347,9 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo para añdir un comentarío en el grupo indicado
-	 * 
-	 * @param grupo
-	 * @param comentario
+	 * Añdir un comentarío en el grupo actual
+	 * @param usuario Usuario que añade el comentario
+	 * @param comentario Comentario que añadimos al grupo
 	 * @param db
 	 */
 	public void anyadirComentario(Usuario usuario, String comentario, DB db) {
@@ -364,7 +371,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo para visualizar todos los comentarios del grupo
+	 * Visualizacion de todos los comentarios del grupo
 	 * @param db
 	 */
 	public void visualizarComentarios(DB db) {
@@ -404,6 +411,7 @@ public class Grupo {
 							+ f.format(fecha) + " - Usuario: " + nombre);
 	
 				}
+				
 			}else{
 				
 				System.out.println("No hay comentarios en este grupo.");
@@ -415,7 +423,7 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo para visualizar los usuarios del grupo
+	 * Visualizar los usuarios del grupo y que pertenecen a la misma localidad
 	 * @param db
 	 */
 	public void visualizarUsuariosLocalidad(Usuario u, DB db) {
@@ -435,7 +443,7 @@ public class Grupo {
 
 		DBCursor cursor = collection.find(query);
 		for (DBObject grupo : cursor) {
-			// Idea de Nando!
+			
 			@SuppressWarnings("unchecked")
 			ArrayList<DBObject> usuarios = (ArrayList<DBObject>) grupo.get("usuarios");
 
@@ -447,12 +455,14 @@ public class Grupo {
 				Usuario usuario = new Usuario();
 				usuario.averiguarUsuario(id_usuario, db);
 				
+				//Comrpobamos que la localidades coinciden
 				if(u.getDireccion()[2].equals(usuario.getDireccion()[2])){
 				
 					nombre = usuario.getUsuario();
 	
 					System.out.println("Usuario: " + nombre + " - Fecha: "
 							+ f.format(fecha));
+					
 				}
 
 			}
@@ -468,9 +478,9 @@ public class Grupo {
 	/**
 	 * Mostrar grupos en los que el usuario es administrador
 	 * 
-	 * @param u
+	 * @param u Usuario que se desea consultar
 	 * @param db
-	 * @return
+	 * @return Grupos que cumplen la condición
 	 */
 	public static ArrayList<Grupo> mostrarGruposAdmin(Usuario u, DB db) {
 
@@ -495,6 +505,7 @@ public class Grupo {
 			int total_comentarios = (int) grupo.get("total_comentarios");
 				
 			//Recogemos los usuarios
+			@SuppressWarnings("unchecked")
 			ArrayList<DBObject> usuarios = (ArrayList<DBObject>) grupo.get("usuarios");
 			
 			for(int i=0; i<usuarios.size(); i++){
@@ -502,9 +513,13 @@ public class Grupo {
 				ObjectId id_encontrada = (ObjectId) usuarios.get(i).get("usuario");
 				boolean admin = (Boolean) usuarios.get(i).get("admin");
 				
+				/* Si los IDs del usuario del array coinciden con el usuario a consultar y son administradores
+				 * se asigna true para que se muestre el grupo como que es administrador
+				 */
 				if((u.getId().equals(id_encontrada)) && admin){
-					System.out.println("entrado condicion");
+					
 					encontrado = true;
+					
 				}
 				
 			}
@@ -521,11 +536,11 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo para buscar todos los grupos donde esta un usuario
+	 * Buscar todos los grupos donde esta un usuario
 	 * 
-	 * @param u
+	 * @param u Usuario que se desea consultar
 	 * @param db
-	 * @return
+	 * @return Grupos que cumplen la condición
 	 */
 	public static ArrayList<Grupo> mostrarGrupos(Usuario u, DB db) {
 
@@ -553,11 +568,11 @@ public class Grupo {
 	}
 
 	/**
-	 * Metodo que busca todos los usuarios donde no esta inscrito el usuario
+	 * Busca todos los usuarios donde no esta inscrito el usuario
 	 * 
-	 * @param u
+	 * @param u Usuario que se desea consultar
 	 * @param db
-	 * @return
+	 * @return Grupos que cumplen la condición
 	 */
 	public static ArrayList<Grupo> mostrarGruposLibres(Usuario u, DB db) {
 
