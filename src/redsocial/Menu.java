@@ -612,7 +612,7 @@ public class Menu {
 
 					if (opcion == 0) {
 
-						System.out.println("Volviendo al men...u");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 
 					} else {
@@ -683,7 +683,7 @@ public class Menu {
 
 					if (opcion == 0) {
 
-						System.out.println("Volviendo al men...u");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 
 					} else {
@@ -748,7 +748,7 @@ public class Menu {
 
 					if (opcion == 0) {
 
-						System.out.println("Volviendo al men...u");
+						System.out.println("Volviendo al menu...");
 						Thread.sleep(1000);
 
 					} else {
