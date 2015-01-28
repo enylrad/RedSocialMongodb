@@ -4,7 +4,9 @@ Pasos para su instalación:
  - Importar librerías:  http://mvnrepository.com/artifact/org.mongodb/mongo-java-driver/2.6.1
 
 Requisitos de la práctica
+
 Se desea crear una aplicación Java que simule una parte de una red social. Para hacerlo, la aplicación se hará mediante una base de datos NoSQL, concretamente, MongoDB.
+
 A continuación se detallan las funcionalidades de la aplicación.
  - Inicio de sesión / registro: Al arrancar la aplicación el usuario podrá entrar con su usuario o registrarse. Cuando se realiza el registro, el usuario añade los siguientes datos (nombre, apellidos, correo electrónico, Contraseña, Dirección (calle, numero, localidad y código postal).
  - Unión a un grupo: Si seleccionamos la opción de unirse a un grupo, el usuario indicará el nombre del grupo y se almacenaran la fecha y hora en la que se ha unido. Además, se actualizará el número de miembros que tiene el grupo si ya existe.
